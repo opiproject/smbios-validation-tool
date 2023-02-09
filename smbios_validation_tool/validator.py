@@ -171,6 +171,8 @@ class HandleFieldChecker:
     handle_id = record.props[self.field].val
     # Make sure the format of handle id is equivalent to all other handles
     # e.g. '0x123' will become '0x0123'.
+    if handle_id == 'Not Provided':
+        return False
     handle_id = '0x{:04X}'.format(int(handle_id, 16))
     if handle_id not in records:
       return False

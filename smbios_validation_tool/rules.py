@@ -57,7 +57,8 @@ rules = [
             [matcher.RecordTypeMatcher(constants.RecordType.BIOS_RECORD)]),
         validator.IndividualValidator([
             validator.FieldPresentChecker('Vendor'),
-            validator.FieldValueRegexpChecker('Vendor', r'.*Google.*')
+            validator.FieldValueRegexpChecker('Vendor',
+                constants.FieldValueRegexps.VENDORS_REGEXP.value)
         ]), 'ERROR: Invalid Vendor field in Type 0 (BIOS Information) record.',
         ('ACTION: BIOS Vendor string should contain "Google".\n'
          'Without that our software will ignore the OEM structures.')),
