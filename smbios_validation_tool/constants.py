@@ -72,4 +72,4 @@ class FieldValueRegexps(enum.Enum):
   SOCKET_DESIGNATION_REGEXP = r'(CPU|P)\d+'
   DEVICE_LOCATOR_REGEXP = r'(?:[^\d]*)\d+'
   BANK_LOCATOR_REGEXP = r'.*(Node|Channel).*'
-  VENDORS_REGEXP = r'(?i).*(Intel|Google|Dell|Lenova|Marvel|Nivida|AMD|Mellanox).*'
+  VENDORS_REGEXP = r'(?i).*(Intel|Google|Dell|Lenovo|Marvell|Nvidia|AMD|Mellanox).*'
