@@ -4,19 +4,17 @@
 import os
 
 import dmiparse
+import unittest
 
-from google3.pyglib import resources
-from google3.testing.pybase import googletest
-
-TEST_PATH = 'google3/third_party/py/dmiparse/test_data'
+TEST_PATH = 'dmiparse/test_data'
 
 
-class DmiParserTest(googletest.TestCase):
+class DmiParserTest(unittest.TestCase):
 
   def setUp(self):
     super(DmiParserTest, self).setUp()
     data_path = os.path.join(TEST_PATH, 'less_compliant_smbios_records.txt')
-    self.data_file = resources.GetResourceFilename(data_path)
+    self.data_file = data_path
 
   def testDmiParseNoDumpFileRaisesException(self):
     with self.assertRaises(FileNotFoundError):
@@ -25,7 +23,7 @@ class DmiParserTest(googletest.TestCase):
   def testDmiParseReturnsExpectedRecords(self):
     records, _ = dmiparse.DmiParser(self.data_file).parse()
 
-    self.assertLen(records, 4)
+    self.assertEqual(len(records), 4)
     self.assertIn('0x0002', records)
     self.assertIn('0x0125', records)
     self.assertIn('0x0126', records)
@@ -37,7 +35,7 @@ class DmiParserTest(googletest.TestCase):
 
     self.assertEqual('0x0002', base_board_record.handle_id)
     self.assertEqual(2, base_board_record.type_id)
-    self.assertLen(base_board_record.props, 9)
+    self.assertEqual(len(base_board_record.props), 9)
 
     self.assertIn('Product Name', base_board_record.props)
     self.assertEqual('Magnesium', base_board_record.props['Product Name'].val)
@@ -100,4 +98,4 @@ class DmiParserTest(googletest.TestCase):
 
 
 if __name__ == '__main__':
-  googletest.main()
+  unittest.main()
