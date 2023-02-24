@@ -18,33 +18,28 @@ import os
 
 import dmiparse
 from smbios_validation_tool import validator
+import unittest
 
-from google3.pyglib import resources
-from google3.testing.pybase import googletest
-from google3.testing.pybase import parameterized
+TEST_PATH = 'smbios_validation_tool/test_data'
 
-TEST_PATH = 'google3/third_party/py/smbios_validation_tool/test_data'
+tested_validators = [validator.RecordsPresenceChecker, 
+                     validator.MemoryGroupAssociationsChecker]
 
-
-class ValidatorTest(parameterized.TestCase):
+class ValidatorTest(unittest.TestCase):
 
   def setUp(self):
     super(ValidatorTest, self).setUp()
-    good_data_path = os.path.join(TEST_PATH,
-                                  'less_compliant_smbios_records.txt')
-    good_data_file = resources.GetResourceFilename(good_data_path)
-    bad_data_path = os.path.join(TEST_PATH,
-                                 'not_less_compliant_smbios_records.txt')
-    bad_data_file = resources.GetResourceFilename(bad_data_path)
-    self.good_records, self.good_groups = dmiparse.DmiParser(
-        good_data_file).parse()
-    self.bad_records, self.bad_groups = dmiparse.DmiParser(
-        bad_data_file).parse()
 
-  @parameterized.parameters((validator.RecordsPresenceChecker),
-                            (validator.MemoryGroupAssociationsChecker))
-  def testGoodDataPassesAllCheckersForGroupRecords(self, checker):
-    self.assertEmpty(checker(self.good_records, self.good_groups).validate())
+    good_data_path = os.path.join(TEST_PATH, 'less_compliant_smbios_records.txt')
+    self.good_records, self.good_groups = dmiparse.DmiParser(good_data_path).parse()
+
+    bad_data_path = os.path.join(TEST_PATH, 'not_less_compliant_smbios_records.txt')
+    self.bad_records, self.bad_groups = dmiparse.DmiParser(bad_data_path).parse()
+
+  def testGoodDataPassesAllCheckersForGroupRecords(self):
+    for checker in tested_validators:
+        with self.subTest(checker):
+          self.assertEqual(checker(self.good_records, self.good_groups).validate(),{})
 
   def testBadDataPromptsExpectedErrorMessagesForRecordsPresenceChecker(self):
     checker = validator.RecordsPresenceChecker(self.bad_records,
@@ -74,4 +69,4 @@ class ValidatorTest(parameterized.TestCase):
 
 
 if __name__ == '__main__':
-  googletest.main()
+  unittest.main()
