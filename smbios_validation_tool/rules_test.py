@@ -20,26 +20,22 @@ import dmiparse
 from smbios_validation_tool import constants
 from smbios_validation_tool import rules
 
-from google3.pyglib import resources
-from google3.testing.pybase import googletest
+import unittest
 
-TEST_PATH = 'google3/third_party/py/smbios_validation_tool/test_data'
+TEST_PATH = 'smbios_validation_tool/test_data'
 
 
-class RulesTest(googletest.TestCase):
+class RulesTest(unittest.TestCase):
 
   def setUp(self):
     super(RulesTest, self).setUp()
-    good_data_path = os.path.join(TEST_PATH,
-                                  'less_compliant_smbios_records.txt')
-    good_data_file = resources.GetResourceFilename(good_data_path)
-    bad_data_path = os.path.join(TEST_PATH,
-                                 'not_less_compliant_smbios_records.txt')
-    bad_data_file = resources.GetResourceFilename(bad_data_path)
+    good_data_path = os.path.join(TEST_PATH, 'less_compliant_smbios_records.txt')
     self.good_records, self.good_groups = dmiparse.DmiParser(
-        good_data_file).parse()
+        good_data_path).parse()
+
+    bad_data_path = os.path.join(TEST_PATH, 'not_less_compliant_smbios_records.txt')
     self.bad_records, self.bad_groups = dmiparse.DmiParser(
-        bad_data_file).parse()
+        bad_data_path).parse()
 
   def _get_err_and_action_msgs(self, record_type):
     err_action_msgs = {}
@@ -61,12 +57,11 @@ class RulesTest(googletest.TestCase):
             record) and not rule.validators.validate_rule(
                 record, self.good_records):
           err_msgs.append(rule.err_msg + '\nHandle ID: ' + record.handle_id)
-    self.assertEmpty(err_msgs)
+    self.assertEqual(err_msgs,[])
 
   def testBadDataPromptsExpectedErrorMessagesForBiosInformationRecords(self):
     err_action_msgs = self._get_err_and_action_msgs(
         constants.RecordType.BIOS_RECORD)
-
     self.assertEqual(
         err_action_msgs, {
             'ERROR: Invalid Vendor field in Type 0 (BIOS Information) record.\nHandle ID: 0x0000':
@@ -123,4 +118,4 @@ class RulesTest(googletest.TestCase):
 
 
 if __name__ == '__main__':
-  googletest.main()
+  unittest.main()

@@ -20,20 +20,20 @@ import dmiparse
 from smbios_validation_tool import constants
 from smbios_validation_tool import matcher
 
-from google3.pyglib import resources
-from google3.testing.pybase import googletest
+import unittest
 
-TEST_PATH = 'google3/third_party/py/smbios_validation_tool/test_data'
+TEST_PATH = 'smbios_validation_tool/test_data'
 
 
-class MatcherTest(googletest.TestCase):
+class MatcherTest(unittest.TestCase):
 
   def setUp(self):
     super(MatcherTest, self).setUp()
     data_path = os.path.join(TEST_PATH, 'less_compliant_smbios_records.txt')
-    data_file = resources.GetResourceFilename(data_path)
-    self.records, _ = dmiparse.DmiParser(data_file).parse()
-    self.assertLen(self.records, 294)
+    self.records , _ = dmiparse.DmiParser(data_path).parse()
+
+  def testRecoredLength(self):
+    self.assertEqual(len(self.records), 294)
 
   def testRecordTypeMatcherMatchesSingleRecord(self):
     matchers = matcher.Matcher(
@@ -42,7 +42,7 @@ class MatcherTest(googletest.TestCase):
     for _, record in self.records.items():
       if matchers.is_matched_record(record):
         matched_records.append(record)
-    self.assertLen(matched_records, 1)
+    self.assertEqual(len(matched_records), 1)
 
   def testRecordTypeMatcherMatchesMultipleRecords(self):
     matchers = matcher.Matcher([
@@ -53,8 +53,8 @@ class MatcherTest(googletest.TestCase):
     for _, record in self.records.items():
       if matchers.is_matched_record(record):
         matched_records.append(record)
-    self.assertLen(matched_records, 3)
+    self.assertEqual(len(matched_records), 3)
 
 
 if __name__ == '__main__':
-  googletest.main()
+  unittest.main()
